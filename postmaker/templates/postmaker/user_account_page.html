@@ -1,0 +1,21 @@
+{% extends 'postmaker/base.html' %}
+{% block content %}
+
+<h1>Hello, {{username}}</h1>
+{% if token or publics %}
+<h2>Here is your info:</h2>
+<h2>{{ token }}</h2>
+<h2>{{ publics }}</h2>
+{% endif %}
+
+<form action="" method="POST">
+  {% csrf_token %}
+  {% if publics %}
+  <input name="publics" type="text" value="{{publics}}">
+  {% else %}
+  <input name="publics" type="text" value="Enter your publics id's here separated by commas">
+  {% endif %}
+  <input type="submit">
+</form>
+
+{% endblock %}

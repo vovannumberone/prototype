@@ -1,0 +1,54 @@
+{% extends 'postmaker/base.html' %}
+
+{% block content %}
+<div class="postmaker_window">
+  <h2 class="text_container"> {{ text }}</h2>
+    <div class="image_container">
+      <img class ="image" src= {{ link }} >
+    </div>
+
+    <div class="buttons">
+      <form action="" method="POST">{% csrf_token %}
+        <input type="hidden" name="direct" value="prev">
+        <input type="hidden" name="page" value="{{ page }}">
+        <button class="left_btn" type="submit">&#8592;</button>
+
+      </form>
+      <form action="" method="POST">{% csrf_token %}
+        <input type="hidden" name="direct" value="next">
+        <input type="hidden" name="page" value="{{ page }}">
+        <button class="right_btn" type="submit">&#8594;</button>
+      </form>
+    </div>
+
+    <form action="" name="make_post" method="POST">{% csrf_token %}
+      <p><select name="make_post">
+        {% if pubdict %}
+        <option disabled>Choose public:</option>
+        {% for k, v in pubdict.items %}
+        <option value="{{ k }}">{{ v }}</option>
+        {% endfor %}
+        {% else %}
+        <option disabled>You have no publics</option>
+        {% endif %}
+      </select>
+      <input type="hidden" name="page" value="{{ page }}">
+      <input type="submit" value="Post"></p>
+    </form>
+
+    <br>{{ page }}</br>
+
+    <!--<form action="" name="make_post" method="POST">{% csrf_token %}
+      <p><select name="make_post">
+        <option disabled>Choose public</option>
+        <option value="124367984">Жемчужина</option>
+        <option value="124367240">PEARL</option>
+        <option selected value="142223503">MY group</option>
+      </select>
+      <input type="hidden" name="page" value="{{ page }}">
+      <input type="submit" value="Post"></p>
+    </form>-->
+
+    <h2 class="text_container"> {{ response }}</h2>
+</div>
+{% endblock %}

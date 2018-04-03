@@ -1,0 +1,12 @@
+{% extends 'postmaker/base.html' %}
+
+{% block content %}
+
+{% for k,v in names.items %}
+<ul>
+  <li>{{k}}</li>
+  <p>{{v}}</p>
+</ul>
+{% endfor %}
+
+{% endblock %}

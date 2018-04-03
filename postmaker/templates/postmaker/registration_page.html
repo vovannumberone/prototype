@@ -1,0 +1,25 @@
+{% extends 'postmaker/base.html' %}
+
+{% block content %}
+
+<div class="registration_form">
+  <form method="POST">{% csrf_token %}
+    <ul>
+      <li>
+        <label>Username*</label>
+        {{form.username}}
+      </li>
+      <li>
+        <label>Password*</label>
+        {{form.password}}
+      </li>
+      <li>
+        <label>Email</label>
+        {{form.email}}
+      </li>
+    </ul>
+    <input type='submit' value="Register">
+  </form>
+</div>
+
+{% endblock %}
