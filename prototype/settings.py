@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 
+web = 'http://pro.pythonanywhere.com/'
+state = 'http://localhost:8000/'
+LINK = state
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -29,6 +32,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'hell0world.pythonanywhere.com',
+    'pro.pythonanywhere.com',
 ]
 
 

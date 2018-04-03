@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 from .models import Account
 from .forms import RegistrationForm
+from prototype.settings import LINK
 
 import requests
 import json
@@ -19,12 +20,12 @@ def posting(url, data):
 
 def index(request):
     if not request.user.is_authenticated:
-        return redirect('login/')
+        return redirect(LINK + '/login/')
     return render(request, 'postmaker/index.html')
 
 def user_account(request, user):
     if not request.user.is_authenticated:
-        return redirect('http://localhost:8000/login/')
+        return redirect(LINK + '/login/')
     if request.method == "POST":
         publics = request.POST["publics"]
         user = request.user.username
@@ -37,30 +38,23 @@ def user_account(request, user):
     return render(request, 'postmaker/user_account_page.html', {'username': username, 'token': token, 'publics': publics})
 
 def login_view(request):
-    data = {}
-    if request.user.is_authenticated:
-        ath = 'You are logged as %s.' % request.user.username
-    else:
-        ath = 'You are NOT logged in.'
-
-    if "log_out" in request.POST:
-        auth.logout(request)
-        return render(request, 'postmaker/info_page.html', {'msg': 'You are logged out.'})
-
-    if request.method == 'POST' and 'log_out' not in request.POST:
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = auth.authenticate(username=username, password=password)
-        if user is not None and user.is_active:
-            auth.login(request, user)
-            msg = 'Logged in successfully.'
+    msg = ''
+    error = ''
+    if request.method == 'POST':
+        if "log_out" in request.POST:
+            auth.logout(request)
+            error = 'You are logged out.'
         else:
-            msg = 'Login failure occured. Retry.'
-        return render(request, 'postmaker/login_page.html', {'msg': msg, 'ath': ath})
-    else:
-        msg = ''
-        error = ''
-        return render(request, 'postmaker/login_page.html', {'msg': msg, 'ath': ath, 'error': error})
+            username = request.POST["username"]
+            password = request.POST["password"]
+            user = auth.authenticate(username=username, password=password)
+            if user is not None and user.is_active:
+                auth.login(request, user)
+                msg = 'Logged in successfully.'
+            else:
+                msg = 'Login failure occured. Retry.'
+            return redirect(LINK)
+    return render(request, 'postmaker/login_page.html', {'msg': msg, 'error': error, 'link': LINK})
 
 def registration(request):
     if request.method == "POST":

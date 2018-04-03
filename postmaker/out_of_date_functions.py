@@ -49,3 +49,32 @@ def get_connected_pubs(username):
         'data': {'access_token': token, 'v': 5.73, 'group_id': pub}}
         pubdict[pub] = posting(name_data['url'], name_data['data'])['response'][0]['name']
     return pubdict
+
+def login_view(request):
+    """ Just an old and dirty login view. """
+    data = {}
+    #if request.user.is_authenticated:
+    #    ath = 'You are logged as %s.' % request.user.username
+    #else:
+    #    ath = 'You are NOT logged in.'
+
+    if "log_out" in request.POST:
+        auth.logout(request)
+        return render(request, 'postmaker/info_page.html', {'msg': 'You are logged out.'})
+
+    #if request.method == 'POST' and 'log_out' not in request.POST:
+    if request.method == 'POST': # Looks loike the above version doesn't make sense
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = auth.authenticate(username=username, password=password)
+        if user is not None and user.is_active:
+            auth.login(request, user)
+            msg = 'Logged in successfully.'
+        else:
+            msg = 'Login failure occured. Retry.'
+        #return render(request, 'postmaker/login_page.html', {'msg': msg, 'ath': ath, 'link': LINK})
+        return redirect(LINK)
+    else:
+        msg = ''
+        error = ''
+        return render(request, 'postmaker/login_page.html', {'msg': msg, 'error': error, 'link': LINK})
