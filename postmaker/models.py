@@ -4,23 +4,14 @@ from django.contrib.auth.models import User
 import json
 
 class Account(models.Model):
-    """
-    from django.db import models
-    from django.contrib.auth.models import User
-    from postmaker.models import Publics
-    142223503, 124367984, 124367240
-    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     access_token = models.CharField(max_length=100, null=True, blank=True)
-    publics = models.CharField(max_length=500, null=True, blank=True)
+    balance = models.IntegerField(null=True)
 
-    def stringalize(self, publics):
-        self.publics = json.dumps(publics)
+class ConnectedPublic(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    pid = models.IntegerField(unique=True)
 
-    def destringalize(self):
-        return json.loads(self.publics)
-
-    def get_clear_pubs(self):
-        publics = self.publics[1:]
-        publics = publics[:-1]
-        return publics
+class SourcePublic(models.Model):
+    pid = models.IntegerField(unique=True)
+    index = models.IntegerField(null=True)

@@ -87,6 +87,7 @@ def test(arg):
 
 today = sec_to_str(now(), 'a')[:10]
 day_case = today
+#day_case = yesterday()
 post_log = []
 
 indic = 1

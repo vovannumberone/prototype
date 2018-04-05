@@ -1,21 +1,70 @@
 {% extends 'postmaker/base.html' %}
-{% block content %}
+{% block head %}
 
-<h1>Hello, {{username}}</h1>
-{% if token or publics %}
-<h2>Here is your info:</h2>
-<h2>{{ token }}</h2>
-<h2>{{ publics }}</h2>
+{% endblock %}
+{% block content %}
+<div class="user_data">
+  <table>
+    {% for v, k in publics.items %}
+    <tr>
+      <td>
+        <P>{{ k }}</p>
+      </td>
+      <td>
+        <P>{{ v }}</p>
+      </td>
+      <td>
+        <button class="delete-button">X</button>
+      </td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <td>
+      </td>
+      <td>
+        <form action="" method="POST">{% csrf_token %}
+          <input type="text" name="new_pid">
+          <input class="add-button" type="submit" value="+">
+        </form>
+      </td>
+    </tr>
+  </table>
+</div>
+<script type="text/javascript" src="//vk.com/js/api/openapi.js?152"></script>
+<script type="text/javascript">
+  VK.init({apiId: 5898704});
+</script>
+
+<!-- VK Widget -->
+<div id="vk_auth"></div>
+<script type="text/javascript">
+  VK.Widgets.Auth("vk_auth", {"onAuth":"function(data) {alert('user '+data['uid']+' authorized');}"});
+</script>
+<!--<h1>{{username}} account:</h1>
+{% if token or pubtdcs %}
+<h3>access_token: </h3>
+<ul>
+  <td>
+    <h3>{{ token }}</h3>
+  </td>
+</ul>
+<h3>pubtdcs: </h3>
+<ul>
+  <td>
+    <h3>{{ pubtdcs }}</h3>
+  </td>
+</ul>
 {% endif %}
 
 <form action="" method="POST">
   {% csrf_token %}
-  {% if publics %}
-  <input name="publics" type="text" value="{{publics}}">
+  {% if pubtdcs %}
+  <input name="pubtdcs" type="text" value="{{pubtdcs}}">
   {% else %}
-  <input name="publics" type="text" value="Enter your publics id's here separated by commas">
+  <input name="pubtdcs" type="text" value="Enter your pubtdcs id's here separated by commas">
   {% endif %}
   <input type="submit">
 </form>
+<p>There should be id's of your pubtdcs, separated by commas</p>-->
 
 {% endblock %}

@@ -4,8 +4,8 @@ from django.utils import timezone
 from django.contrib import auth
 from django.contrib.auth.models import User
 
-from .models import Account
-from .forms import RegistrationForm
+from .models import *
+from .forms import *
 from prototype.settings import LINK
 
 import requests
@@ -20,22 +20,36 @@ def posting(url, data):
 
 def index(request):
     if not request.user.is_authenticated:
-        return redirect(LINK + '/login/')
+        return redirect(LINK + 'login/')
     return render(request, 'postmaker/index.html')
 
 def user_account(request, user):
     if not request.user.is_authenticated:
-        return redirect(LINK + '/login/')
+        return redirect(LINK + 'login/')
     if request.method == "POST":
+        if "new_pid" in request.POST:
+            # There must be some data-checking
+            pid = request.POST["new_pid"]
+            user = User.objects.filter(username=request.user.username)[0]
+            cp = ConnectedPublic(user=user, pid=pid)
+            cp.save()
+            return redirect('/')
         publics = request.POST["publics"]
-        user = request.user.username
-        user_account = Account.objects.filter(user=user)
+        username = request.user.username
+        user = User.objects.filter(username=username)[0]
+        user_account = Account.objects.filter(user=user)[0]
+        #user_account.publics = publics
+        user_account.save()
+        return render(request, 'postmaker/info_page.html', {'msg':
+        'Your publics updated successfully. Or not. I do not know, actually.'})
     username = request.user.username
     user = User.objects.filter(username=username)[0]
     account = Account.objects.filter(user=user)[0]
     token = account.access_token
-    publics = account.publics
-    return render(request, 'postmaker/user_account_page.html', {'username': username, 'token': token, 'publics': publics})
+    #publics = account.publics
+    publics = get_connected_pubs(user)
+    return render(request, 'postmaker/user_account_page.html', {'username':
+    username, 'token': token, 'publics': publics})
 
 def login_view(request):
     msg = ''
@@ -54,7 +68,8 @@ def login_view(request):
             else:
                 msg = 'Login failure occured. Retry.'
             return redirect(LINK)
-    return render(request, 'postmaker/login_page.html', {'msg': msg, 'error': error, 'link': LINK})
+    return render(request, 'postmaker/login_page.html', {'msg': msg,
+    'error': error, 'link': LINK})
 
 def registration(request):
     if request.method == "POST":
@@ -86,6 +101,17 @@ def make_post(post, gid):
     'data': {'access_token': token, 'v': 3, 'owner_id': -gid, 'message': msg, 'attachments': link,'from_group': 1,}}
     return posting(postt['url'], postt['data'])
 
+def get_connected_pubs(user):
+    # The following line returns list of CP objects, so you must make additional opening, like this: publist[0].pid
+    publist = ConnectedPublic.objects.filter(user=user)
+    pubdict = {}
+    for pub in publist:
+        time.sleep(0.3)
+        name_data = {'url': 'https://api.vk.com/method/groups.getById?',
+        'data': {'access_token': token, 'v': 5.73, 'group_id': pub.pid}}
+        pubdict[pub.pid] = posting(name_data['url'], name_data['data'])['response'][0]['name']
+    return pubdict
+
 def postmaker(request):
     response = ''
     from . import postgetter
@@ -111,15 +137,14 @@ def postmaker(request):
             gid = request.POST["make_post"]
             post_data = post_list[page]
             response = make_post(post_data, int(gid))
-
     link = post_list[page]['full_link']
     if post_list[page]['text'] == '':
         text = 'Sample text.'
     else:
         text = post_list[page]['text']
     if request.user.is_authenticated:
-        username = User.objects.filter(username=request.user.username)[0]
-        pubdict = get_connected_pubs(username)
+        user = User.objects.filter(username=request.user.username)[0]
+        pubdict = get_connected_pubs(user)
 
     else:
         msg = 'You are not authenticated! Please, log in.'
