@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('postmaker/', postmaker),
     path('', index),
+    path('vkauth/', vkauth),
     path('login/', login_view),
     path('registration/', registration),
     path('user/<str:user>/', user_account),

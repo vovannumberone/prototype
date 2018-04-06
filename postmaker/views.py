@@ -24,6 +24,20 @@ def index(request):
         return redirect(LINK + 'login/')
     return render(request, 'postmaker/index.html')
 
+def vkauth(request):
+    if 'code' in request.GET:
+        code = request.GET['code']
+        token_link = "https://oauth.vk.com/access_token?client_id=5898704&client_secret=AmGtZ1I4meDTrmIx5XgI&redirect_uri=https://hell0world.pythonanywhere.com/send/&code=" + str(code)
+        response = requests.post(token_link)
+        token = json.loads(response.text)['access_token']
+        return HttpResponse("Here's you token, cowboy - " + str(token))
+    elif 'error' in request.GET:
+        error = request.GET['error']
+        error_description = request.GET['error_description']
+        # Эту ветвь надо продлить (!)
+    else:
+        return redirect('https://oauth.vk.com/authorize?client_id=5898704&display=popup&redirect_uri=https://hell0world.pythonanywhere.com/send/&scope=notify,friends,photos,audio,video,pages,status,notes,wall,ads,offline,docs,groups,notifications,stats,email&response_type=code&v=5.71&state=6666666')
+
 def user_account(request, user):
     if not request.user.is_authenticated:
         return redirect(LINK + 'login/')
