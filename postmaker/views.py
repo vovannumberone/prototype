@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 from .models import *
 from .forms import *
+from . import postgetter
 from prototype.settings import LINK
 
 import requests
@@ -34,6 +35,10 @@ def user_account(request, user):
             cp = ConnectedPublic(user=user, pid=pid)
             cp.save()
             return redirect('/')
+        if "delete_public" in request.POST:
+            # You must complete this
+            msg = 'Delete button was pushed with value - %s' % request.POST["delete_public"]
+            return render(request, 'postmaker/info_page.html', {'msg': msg})
         publics = request.POST["publics"]
         username = request.user.username
         user = User.objects.filter(username=username)[0]
@@ -112,10 +117,12 @@ def get_connected_pubs(user):
         pubdict[pub.pid] = posting(name_data['url'], name_data['data'])['response'][0]['name']
     return pubdict
 
+def get_posts():
+    return postgetter.sl
+
 def postmaker(request):
     response = ''
-    from . import postgetter
-    post_list = postgetter.sl
+    post_list = get_posts()
     page = 1
     if request.method == 'POST':
         page = int(request.POST["page"])
